@@ -1,166 +1,174 @@
-# 🍅 StickS3 简单番茄时钟
+# 🍅 Simple Pomodoro Timer for StickS3
 
-一个运行在 **M5Stack StickS3** 上的简单离线番茄钟。基于 **PlatformIO + Arduino + M5Unified**。
+English | [简体中文](README_zh-CN.md)
 
-由于实在是找不到在StickS3上跑的番茄时钟，只能被迫自己搓一个。它只负责倒计时，然后提醒你该休息了。
+A simple offline Pomodoro timer for the **M5Stack StickS3**, built with **PlatformIO + Arduino + M5Unified**.
 
-## 使用
+I couldn't find a Pomodoro timer for the StickS3, so I was forced to make one myself. It counts down and reminds you when it's time to take a break.
 
-默认配置：
+## Usage
 
-- Focus：**25 分钟**
-- Short break：**5 分钟**
-- Long break：**15 分钟**
-- 每完成 **4 个 Focus** 进入一次 Long break
+Default configuration:
 
-每个阶段结束后，需要按 **Key1** 才会进入下一阶段。
+- Focus: **25 minutes**
+- Short break: **5 minutes**
+- Long break: **15 minutes**
+- A Long break after every **4 Focus sessions**
 
-机器可以提醒你休息，但不会替你休息。
+After each phase finishes, press **Key1** to start the next one.
 
-| 位置        | Key1（G11）                   | Key2（G12） |
-| ----------- | ----------------------------- | ----------- |
-| 主界面      | 开始 / 暂停 / 继续 / 下一阶段 | 打开菜单    |
-| 菜单 / 设置 | 确认                          | 选择        |
-| 编辑设置    | 保存                          | 修改        |
+The device can remind you to take a break. It cannot take the break for you.
 
-## 界面
+| Screen          | Key1 (G11)                          | Key2 (G12) |
+| --------------- | ----------------------------------- | ---------- |
+| Timer           | Start / Pause / Resume / Next phase | Open menu  |
+| Menu / Settings | Confirm                             | Select     |
+| Edit setting    | Save                                | Change     |
 
-主界面显示：
+## Display
 
-- 当前阶段与轮次
-- 大号倒计时
-- 电量百分比
-- 充电状态
+The main screen shows:
 
-倒计时颜色：
+- Current phase and round count
+- Large countdown timer
+- Battery percentage
+- Charging status
 
-- 灰白：待开始
-- 绿色：计时中
-- 琥珀黄：暂停
-- 蓝色：完成
+Timer colors:
 
-电量每 **5 秒**更新一次。
+- Gray-white: Ready
+- Green: Running
+- Amber: Paused
+- Blue: Complete
 
-低于或等于 20% 时变为琥珀黄；读取失败显示 `--%`；充电时显示黄色闪电。
+Battery status updates every **5 seconds**.
 
-30 秒无操作后，屏幕亮度会从约 60% 降到约 5%。
+At or below 20%, the battery indicator turns amber. If the battery level cannot be read, it shows `--%`. A yellow lightning bolt appears while charging.
 
-屏幕不会彻底关闭，毕竟一个看不到剩余时间的倒计时器，多少有点失去职业尊严。
+After 30 seconds of inactivity, screen brightness drops from about 60% to about 5%.
+
+The screen never turns off completely. A countdown timer that refuses to show the remaining time would be neglecting its professional duties.
 
 ## Actions
 
-菜单包含：
+The menu contains:
 
 - Back
 - End round
 - Settings
 
-**End round** 需要二次确认，并默认选中 Cancel。
+**End round** requires confirmation and defaults to Cancel.
 
-因为误触结束一轮专注，不属于效率工具该提供的惊喜。
+Accidentally ending a focus session is not the kind of surprise a productivity tool should provide.
 
-Settings 仅在待开始状态下可用。
+Settings are only available while the timer is idle.
 
-## 设置
+## Settings
 
-| 设置          | 范围      | 默认 |
-| ------------- | --------- | ---- |
-| Focus         | 5–60 分钟 | 25   |
-| Short break   | 1–15 分钟 | 5    |
-| Long break    | 5–30 分钟 | 15   |
-| Long interval | 2–6       | 4    |
-| Sound         | Off / Low / Medium / High | High |
-| Auto start    | On / Off  | Off  |
+| Setting       | Range                     | Default |
+| ------------- | ------------------------- | ------- |
+| Focus         | 5–60 min                  | 25      |
+| Short break   | 1–15 min                  | 5       |
+| Long break    | 5–30 min                  | 15      |
+| Long interval | 2–6                       | 4       |
+| Sound         | Off / Low / Medium / High | High    |
+| Auto start    | On / Off                  | Off     |
 
-Settings 中会直接显示当前值。
+The current value is shown directly in Settings.
 
-设置会持久化保存；重启后保留配置，但当前计时和已完成轮次会重置。
+Settings are saved persistently. After a reboot, your configuration is preserved, while the current timer and completed round count are reset.
 
-如果出现：
+If you see:
 
 ```text
 Save failed: RAM only
 ```
 
-说明新设置只在当前运行中有效，重启后设备会选择性失忆。
+the new settings are only active for the current session. After rebooting, the device will develop selective amnesia.
 
-## 🔊 提示音
+## 🔊 Sound
 
-阶段完成后播放一次内嵌提示音。
+An embedded alert sound is played when a phase finishes.
 
-可在 Settings 中关闭。
+It can be disabled in Settings.
 
-播放结束后扬声器会关闭，不会继续在那里默默耗电。
+The speaker is shut down after playback, instead of quietly consuming power for no particular reason.
 
-## 构建
+## Build
 
 ```sh
 pio run -e sticks3
 ```
 
-烧录：
+Upload:
 
 ```sh
 pio run -e sticks3 -t upload
 ```
 
-串口监视：
+Serial monitor:
 
 ```sh
 pio device monitor -b 115200
 ```
 
-固件位于：
+The firmware binary is located at:
 
 ```text
 .pio/build/sticks3/firmware.bin
 ```
 
-## 项目结构
+## Project Structure
 
 ```text
-lib/Pomodoro/Pomodoro.h   计时状态机、设置与菜单逻辑
-src/Hardware.h            按键、电池、背光、扬声器
+lib/Pomodoro/Pomodoro.h   Timer state machine, settings, and menu logic
+src/Hardware.h            Buttons, battery, backlight, and speaker
 src/Display.h             UI
-src/SettingsStore.h       设置持久化
-src/main.cpp              把这些东西粘在一起
+src/SettingsStore.h       Persistent settings
+src/main.cpp              Glues everything together
 ```
 
-## 硬件
+## Hardware
 
-目标设备：**M5Stack StickS3**
+Target device: **M5Stack StickS3**
 
-目前主要使用：
+Currently used:
 
 - ESP32-S3
 - LCD
 - Key1 / Key2
-- 内置扬声器
-- 电池与充电状态
+- Built-in speaker
+- Battery and charging status
 - M5PM1
 
-BMI270、麦克风、Wi-Fi、红外等功能目前没有为了“硬件有，所以必须用”而强行加入。功能不是集邮。
+The BMI270, microphone, Wi-Fi, infrared, and other hardware are not being used just because they happen to exist.
 
-## 为什么做这个
+Features are not collectibles.
 
-因为手机番茄钟有一个经典问题：
+## Why
+
+Phone-based Pomodoro timers have a classic problem:
 
 ```text
-打开手机看计时
+Open phone to check timer
 ↓
-看到通知
+See notification
 ↓
-顺手点开
+Tap notification
 ↓
-二十分钟以后
+Twenty minutes later
 ↓
-我刚才要干嘛？
+What was I doing again?
 ```
 
-所以做一个只会倒计时的设备，它甚至没有互联网。非常先进。
+So this is a device that only counts down.
 
-## 参考
+It doesn't even have internet access.
 
-M5Stack StickS3 官方文档：
+Very advanced.
+
+## Reference
+
+Official M5Stack StickS3 documentation:
 
 https://docs.m5stack.com/en/core/StickS3
