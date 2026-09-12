@@ -24,7 +24,7 @@ public:
             canvas_.setTextSize(1);
             text(phase, 10, 5, accent);
             char count[20]; snprintf(count, sizeof(count), "%u/%u", s.completed, app.timer.settings().interval);
-            text(count, (240 - canvas_.textWidth(count)) / 2, 5, 0xBDF7);
+            text(count, 10 + canvas_.textWidth(phase) + 8, 5, 0xBDF7);
             char battery[8];
             if (batteryPercent < 0) snprintf(battery, sizeof(battery), "--%%");
             else snprintf(battery, sizeof(battery), "%d%%", batteryPercent);
