@@ -35,8 +35,10 @@ public:
     void alert(uint64_t time, bool sound) {
         touch(time);
         if (!sound) return;
-        M5.Speaker.begin(); M5.Speaker.setVolume(179);
+        if (!M5.Speaker.begin()) return;
+        M5.Speaker.setVolume(179);
         audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 1, -1, true);
+        if (!audioPlaying_) M5.Speaker.end();
     }
     void update(uint64_t time) {
         if (time >= nextBatteryRead_) readBattery(time);
