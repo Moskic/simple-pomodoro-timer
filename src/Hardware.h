@@ -1,6 +1,7 @@
 #pragma once
 #include <M5Unified.h>
 #include <esp_timer.h>
+#include "NotificationSound.h"
 
 struct Input { bool confirm, select; };
 class Hardware {
@@ -34,21 +35,16 @@ public:
     void alert(uint64_t time, bool sound) {
         touch(time);
         if (!sound) return;
-        M5.Speaker.begin(); M5.Speaker.setVolume(102);
-        M5.Speaker.tone(880, 120);
-        audioStage_ = 1; nextAudio_ = time + 200;
+        M5.Speaker.begin(); M5.Speaker.setVolume(128);
+        audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 1, -1, true);
     }
     void update(uint64_t time) {
         if (time >= nextBatteryRead_) readBattery(time);
         if (!dimmed_ && time - lastActivity_ >= 30000) {
             M5.Display.setBrightness(13); dimmed_ = true;
         }
-        if (audioStage_ && time >= nextAudio_) {
-            if (audioStage_ == 1) {
-                M5.Speaker.tone(1175, 160); audioStage_ = 2; nextAudio_ = time + 180;
-            } else if (!M5.Speaker.isPlaying()) {
-                M5.Speaker.end(); audioStage_ = 0;
-            }
+        if (audioPlaying_ && !M5.Speaker.isPlaying()) {
+            M5.Speaker.end(); audioPlaying_ = false;
         }
     }
 private:
@@ -62,6 +58,6 @@ private:
     bool charging_ = false;
     uint64_t nextBatteryRead_ = 0;
     bool dimmed_ = true;
-    uint8_t audioStage_ = 0;
-    uint64_t lastActivity_ = 0, nextAudio_ = 0;
+    bool audioPlaying_ = false;
+    uint64_t lastActivity_ = 0;
 };
