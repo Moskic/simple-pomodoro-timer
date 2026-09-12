@@ -22,6 +22,7 @@ void setup() {
         M5.Display.drawString("Init failed. See serial.", 4, 45);
         return;
     }
+    display.showSplash();
     app.timer.configure(storage.load());
     ready = true;
     display.render(app, Hardware::now(), true, false, hardware.batteryPercent(), hardware.charging());

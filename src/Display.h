@@ -2,10 +2,19 @@
 #include <M5Unified.h>
 #include <Pomodoro.h>
 #include <stdio.h>
+#include "SplashTomato.h"
 
 class Display {
 public:
     bool begin() { canvas_.setColorDepth(16); return canvas_.createSprite(240, 135) != nullptr; }
+    void showSplash() {
+        canvas_.fillScreen(0x0841);
+        canvas_.pushImage((240 - splashTomatoWidth) / 2, (135 - splashTomatoHeight) / 2,
+            splashTomatoWidth, splashTomatoHeight,
+            reinterpret_cast<const lgfx::rgb565_t*>(splashTomatoPixels));
+        canvas_.pushSprite(0, 0);
+        delay(1000);
+    }
     void render(const pomo::Controller& app, uint64_t now, bool dirty, bool saveError, int batteryPercent, bool charging) {
         const auto s = app.timer.snapshot(now);
         const uint64_t seconds = (s.remainingMs + 999) / 1000;
