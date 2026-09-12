@@ -35,7 +35,7 @@ public:
     void alert(uint64_t time, bool sound) {
         touch(time);
         if (!sound) return;
-        M5.Speaker.begin(); M5.Speaker.setVolume(128);
+        M5.Speaker.begin(); M5.Speaker.setVolume(179);
         audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 1, -1, true);
     }
     void update(uint64_t time) {
