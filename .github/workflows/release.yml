@@ -1,0 +1,54 @@
+name: Release Firmware
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Build firmware
+        run: pio run -e sticks3
+
+      - name: Create merged BIN
+        shell: bash
+        run: |
+          mkdir -p dist
+
+          TAG="${{ github.event.release.tag_name }}"
+          OUT="dist/simple-pomodoro-timer-${TAG}.bin"
+
+          python ~/.platformio/packages/tool-esptoolpy/esptool.py \
+            --chip esp32s3 merge_bin \
+            -o "$OUT" \
+            0x0000 .pio/build/sticks3/bootloader.bin \
+            0x8000 .pio/build/sticks3/partitions.bin \
+            0xe000 ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin \
+            0x10000 .pio/build/sticks3/firmware.bin
+
+          ls -lh "$OUT"
+
+      - name: Upload BIN to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload \
+            "${{ github.event.release.tag_name }}" \
+            dist/*.bin \
+            --clobber

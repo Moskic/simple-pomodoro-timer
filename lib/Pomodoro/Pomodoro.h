@@ -94,7 +94,7 @@ public:
             if (page == Page::Timer) { page = Page::Menu; selection = 0; }
             else if (page == Page::Menu) selection = (selection + 1) % (state == Status::Idle ? 3 : 2);
             else if (page == Page::EndConfirm) selection = 1 - selection;
-            else if (page == Page::Settings) selection = (selection + 1) % 6;
+            else if (page == Page::Settings) selection = (selection + 1) % 7;
             else increment();
             return e;
         }
@@ -110,8 +110,12 @@ public:
             if (selection == 1) timer.reset();
             page = Page::Timer; selection = 0; break;
         case Page::Settings:
-            if (selection == 5) page = Page::Timer;
-            else { field = selection; draft = timer.settings(); page = Page::Edit; }
+            if (selection == 6) page = Page::Timer;
+            else if (selection == 5) {
+                const Settings defaults;
+                e.save = !(timer.settings() == defaults);
+                if (e.save) timer.configure(defaults);
+            } else { field = selection; draft = timer.settings(); page = Page::Edit; }
             break;
         case Page::Edit:
             e.save = !(draft == timer.settings());

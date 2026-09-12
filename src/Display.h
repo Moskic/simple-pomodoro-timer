@@ -62,11 +62,11 @@ public:
                 row("Cancel", 0, app.selection); row("End round", 1, app.selection);
             } else if (app.page == pomo::Page::Settings) {
                 // Scroll a three-row viewport so text stays legible on the small LCD.
-                const int start = app.selection < 3 ? 0 : 3;
-                const char* page = start == 0 ? "1/2" : "2/2";
+                const int start = (app.selection / 3) * 3;
+                char page[8]; snprintf(page, sizeof(page), "%u/3", unsigned(app.selection / 3 + 1));
                 text(page, 230 - canvas_.textWidth(page), 4, 0xBDF7);
                 const auto& settings = app.timer.settings();
-                for (int i = start; i < start + 3; ++i) {
+                for (int i = start; i < start + 3 && i < 7; ++i) {
                     char value[12] = "";
                     if (i == 0) snprintf(value, sizeof(value), "%um", settings.focus);
                     else if (i == 1) snprintf(value, sizeof(value), "%um", settings.shortBreak);
@@ -112,7 +112,7 @@ private:
         text(right, 230 - canvas_.textWidth(right), 115, 0xBDF7);
     }
     static const char* label(int i) {
-        static const char* labels[] = {"Focus", "Short break", "Long break", "Long interval", "Sound", "Back"};
+        static const char* labels[] = {"Focus", "Short break", "Long break", "Long interval", "Sound", "Reset", "Back"};
         return labels[i];
     }
 };
