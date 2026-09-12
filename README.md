@@ -47,6 +47,4 @@ pio device monitor -b 115200
 - `src/Hardware.h`、`src/Display.h`、`src/SettingsStore.h`：硬件、绘制与持久化适配。
 - `src/main.cpp`：协调输入、计时、提醒、保存和显示。
 
-已刷入 StickS3 并通过固件校验。完整计时循环、提示音、断电保存及电池续航仍需实机验收。
-
 参考：[StickS3 官方文档](https://docs.m5stack.com/en/core/StickS3)

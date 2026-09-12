@@ -14,8 +14,8 @@ bool hadSaveError = false;
 
 void setup() {
     Serial.begin(115200);
-    const bool hardwareReady = hardware.begin();
-    if (!hardwareReady || !display.begin()) {
+    hardware.begin();
+    if (!display.begin()) {
         M5.Display.setBrightness(153);
         M5.Display.fillScreen(TFT_BLACK);
         M5.Display.setTextColor(TFT_RED);

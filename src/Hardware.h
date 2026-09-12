@@ -5,7 +5,7 @@
 struct Input { bool confirm, select; };
 class Hardware {
 public:
-    bool begin() {
+    void begin() {
         auto cfg = M5.config();
         cfg.internal_imu = false; cfg.internal_rtc = false;
         cfg.internal_mic = false;
@@ -19,7 +19,6 @@ public:
         touch(now());
         readBattery(now());
         Serial.printf("Flash: %u; PSRAM: %u\n", ESP.getFlashChipSize(), ESP.getPsramSize());
-        return true;
     }
     static uint64_t now() { return uint64_t(esp_timer_get_time()) / 1000; }
     int batteryPercent() const { return batteryPercent_; }
@@ -56,7 +55,7 @@ private:
     void readBattery(uint64_t time) {
         const int level = M5.Power.getBatteryLevel();
         batteryPercent_ = level < 0 ? -1 : (level > 100 ? 100 : level);
-        charging_ = M5.Power.isCharging();
+        charging_ = M5.Power.isCharging() == m5::Power_Class::is_charging;
         nextBatteryRead_ = time + 5000;
     }
     int batteryPercent_ = -1;

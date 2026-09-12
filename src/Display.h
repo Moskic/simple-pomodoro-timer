@@ -9,7 +9,8 @@ public:
     void render(const pomo::Controller& app, uint64_t now, bool dirty, bool saveError, int batteryPercent, bool charging) {
         const auto s = app.timer.snapshot(now);
         const uint64_t seconds = (s.remainingMs + 999) / 1000;
-        if (!dirty && seconds == lastSeconds_ && batteryPercent == lastBatteryPercent_ && charging == lastCharging_) return;
+        const bool secondsChanged = app.page == pomo::Page::Timer && seconds != lastSeconds_;
+        if (!dirty && !secondsChanged && batteryPercent == lastBatteryPercent_ && charging == lastCharging_) return;
         lastBatteryPercent_ = batteryPercent;
         lastCharging_ = charging;
         lastSeconds_ = seconds;
