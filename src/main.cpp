@@ -41,5 +41,5 @@ void loop() {
     const bool saveError = now < saveErrorUntil;
     display.render(app, now, input.confirm || input.select || effects.completed || saveError != hadSaveError, saveError, hardware.batteryPercent(), hardware.charging());
     hadSaveError = saveError;
-    delay(1); // Yield to the ESP32 scheduler; never wait for countdown or audio.
+    delay(10); // Yield to the ESP32 scheduler; never wait for countdown or audio.
 }

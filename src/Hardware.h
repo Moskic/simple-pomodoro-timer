@@ -41,7 +41,7 @@ public:
     void update(uint64_t time) {
         if (time >= nextBatteryRead_) readBattery(time);
         if (!dimmed_ && time - lastActivity_ >= 30000) {
-            M5.Display.setBrightness(38); dimmed_ = true;
+            M5.Display.setBrightness(26); dimmed_ = true;
         }
         if (audioStage_ && time >= nextAudio_) {
             if (audioStage_ == 1) {
