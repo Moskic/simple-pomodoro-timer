@@ -54,6 +54,7 @@ public:
         } else {
             const char* title = app.page == pomo::Page::Menu ? "ACTIONS" :
                 app.page == pomo::Page::EndConfirm ? "END THIS ROUND?" :
+                app.page == pomo::Page::ResetConfirm ? "RESET SETTINGS?" :
                 app.page == pomo::Page::Settings ? "SETTINGS" : "EDIT SETTING";
             text(title, 10, 4, accent);
             if (app.page == pomo::Page::Menu) {
@@ -61,6 +62,8 @@ public:
                 if (s.status == pomo::Status::Idle) row("Settings", 2, app.selection);
             } else if (app.page == pomo::Page::EndConfirm) {
                 row("Cancel", 0, app.selection); row("End round", 1, app.selection);
+            } else if (app.page == pomo::Page::ResetConfirm) {
+                row("Cancel", 0, app.selection); row("Reset", 1, app.selection);
             } else if (app.page == pomo::Page::Settings) {
                 // Scroll a three-row viewport so text stays legible on the small LCD.
                 const int start = (app.selection / 3) * 3;

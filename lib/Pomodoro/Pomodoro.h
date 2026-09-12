@@ -76,7 +76,7 @@ private:
     uint8_t completed_ = 0;
     uint64_t remaining_ = 0, deadline_ = 0;
 };
-enum class Page { Timer, Menu, EndConfirm, Settings, Edit };
+enum class Page { Timer, Menu, EndConfirm, Settings, ResetConfirm, Edit };
 struct Effects { bool completed = false, save = false; };
 class Controller {
 public:
@@ -98,6 +98,7 @@ public:
             else if (page == Page::Menu) selection = (selection + 1) % (state == Status::Idle ? 3 : 2);
             else if (page == Page::EndConfirm) selection = 1 - selection;
             else if (page == Page::Settings) selection = (selection + 1) % 8;
+            else if (page == Page::ResetConfirm) selection = 1 - selection;
             else increment();
             return e;
         }
@@ -114,11 +115,16 @@ public:
             page = Page::Timer; selection = 0; break;
         case Page::Settings:
             if (selection == 7) page = Page::Timer;
-            else if (selection == 6) {
+            else if (selection == 6) { page = Page::ResetConfirm; selection = 0; }
+            else { field = selection; draft = timer.settings(); page = Page::Edit; }
+            break;
+        case Page::ResetConfirm:
+            if (selection == 1) {
                 const Settings defaults;
                 e.save = !(timer.settings() == defaults);
                 if (e.save) timer.configure(defaults);
-            } else { field = selection; draft = timer.settings(); page = Page::Edit; }
+            }
+            page = Page::Settings; selection = 6;
             break;
         case Page::Edit:
             e.save = !(draft == timer.settings());
