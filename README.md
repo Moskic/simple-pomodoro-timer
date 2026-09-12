@@ -69,7 +69,8 @@ Settings 仅在待开始状态下可用。
 | Short break   | 1–15 分钟 | 5    |
 | Long break    | 5–30 分钟 | 15   |
 | Long interval | 2–6       | 4    |
-| Sound         | On / Off  | On   |
+| Sound         | Off / Low / Medium / High | High |
+| Auto start    | On / Off  | Off  |
 
 Settings 中会直接显示当前值。
 

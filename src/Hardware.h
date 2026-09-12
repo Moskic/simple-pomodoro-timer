@@ -32,11 +32,11 @@ public:
         lastActivity_ = time;
         if (dimmed_) { M5.Display.setBrightness(153); dimmed_ = false; }
     }
-    void alert(uint64_t time, bool sound) {
+    void alert(uint64_t time, uint8_t sound) {
         touch(time);
-        if (!sound) return;
+        if (sound == 0) return;
         if (!M5.Speaker.begin()) return;
-        M5.Speaker.setVolume(179);
+        M5.Speaker.setVolume(sound == 1 ? 114 : sound == 2 ? 153 : 190);
         audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 1, -1, true);
         if (!audioPlaying_) M5.Speaker.end();
     }

@@ -4,15 +4,17 @@
 namespace pomo {
 struct Settings {
     uint8_t focus = 25, shortBreak = 5, longBreak = 15, interval = 4;
-    bool sound = true;
+    uint8_t sound = 3;
+    bool autoStart = false;
     bool valid() const {
         return focus >= 5 && focus <= 60 && focus % 5 == 0 &&
             shortBreak >= 1 && shortBreak <= 15 && longBreak >= 5 &&
-            longBreak <= 30 && longBreak % 5 == 0 && interval >= 2 && interval <= 6;
+            longBreak <= 30 && longBreak % 5 == 0 && interval >= 2 && interval <= 6 && sound <= 3;
     }
     bool operator==(const Settings& b) const {
         return focus == b.focus && shortBreak == b.shortBreak &&
-            longBreak == b.longBreak && interval == b.interval && sound == b.sound;
+            longBreak == b.longBreak && interval == b.interval &&
+            sound == b.sound && autoStart == b.autoStart;
     }
 };
 enum class Phase { Focus, ShortBreak, LongBreak };
@@ -87,6 +89,7 @@ public:
         Effects e;
         if (timer.update(now)) {
             page = Page::Timer; selection = 0; e.completed = true;
+            if (timer.settings().autoStart) timer.confirm(now);
             return e; // Completion wins over simultaneous input.
         }
         const auto state = timer.snapshot(now).status;
@@ -94,7 +97,7 @@ public:
             if (page == Page::Timer) { page = Page::Menu; selection = 0; }
             else if (page == Page::Menu) selection = (selection + 1) % (state == Status::Idle ? 3 : 2);
             else if (page == Page::EndConfirm) selection = 1 - selection;
-            else if (page == Page::Settings) selection = (selection + 1) % 7;
+            else if (page == Page::Settings) selection = (selection + 1) % 8;
             else increment();
             return e;
         }
@@ -110,8 +113,8 @@ public:
             if (selection == 1) timer.reset();
             page = Page::Timer; selection = 0; break;
         case Page::Settings:
-            if (selection == 6) page = Page::Timer;
-            else if (selection == 5) {
+            if (selection == 7) page = Page::Timer;
+            else if (selection == 6) {
                 const Settings defaults;
                 e.save = !(timer.settings() == defaults);
                 if (e.save) timer.configure(defaults);
@@ -131,7 +134,8 @@ private:
         case 1: draft.shortBreak = draft.shortBreak == 15 ? 1 : draft.shortBreak + 1; break;
         case 2: draft.longBreak = draft.longBreak == 30 ? 5 : draft.longBreak + 5; break;
         case 3: draft.interval = draft.interval == 6 ? 2 : draft.interval + 1; break;
-        case 4: draft.sound = !draft.sound; break;
+        case 4: draft.sound = (draft.sound + 1) % 4; break;
+        case 5: draft.autoStart = !draft.autoStart; break;
         }
     }
 };

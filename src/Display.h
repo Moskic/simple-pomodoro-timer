@@ -67,20 +67,22 @@ public:
                 char page[8]; snprintf(page, sizeof(page), "%u/3", unsigned(app.selection / 3 + 1));
                 text(page, 230 - canvas_.textWidth(page), 4, 0xBDF7);
                 const auto& settings = app.timer.settings();
-                for (int i = start; i < start + 3 && i < 7; ++i) {
+                for (int i = start; i < start + 3 && i < 8; ++i) {
                     char value[12] = "";
                     if (i == 0) snprintf(value, sizeof(value), "%um", settings.focus);
                     else if (i == 1) snprintf(value, sizeof(value), "%um", settings.shortBreak);
                     else if (i == 2) snprintf(value, sizeof(value), "%um", settings.longBreak);
                     else if (i == 3) snprintf(value, sizeof(value), "%u", settings.interval);
-                    else if (i == 4) snprintf(value, sizeof(value), "%s", settings.sound ? "On" : "Off");
+                    else if (i == 4) snprintf(value, sizeof(value), "%s", soundLabel(settings.sound));
+                    else if (i == 5) snprintf(value, sizeof(value), "%s", settings.autoStart ? "On" : "Off");
                     row(label(i), i - start, app.selection - start, value);
                 }
             } else {
                 text(label(app.field), 10, 32, 0xBDF7);
                 char value[24];
                 const auto& d = app.draft;
-                if (app.field == 4) snprintf(value, sizeof(value), "%s", d.sound ? "On" : "Off");
+                if (app.field == 4) snprintf(value, sizeof(value), "%s", soundLabel(d.sound));
+                else if (app.field == 5) snprintf(value, sizeof(value), "%s", d.autoStart ? "On" : "Off");
                 else snprintf(value, sizeof(value), "%u %s", app.field == 0 ? d.focus : app.field == 1 ? d.shortBreak :
                     app.field == 2 ? d.longBreak : d.interval, app.field == 3 ? "sessions" : "min");
                 canvas_.fillRect(10, 59, 4, 34, accent);
@@ -113,7 +115,11 @@ private:
         text(right, 230 - canvas_.textWidth(right), 115, 0xBDF7);
     }
     static const char* label(int i) {
-        static const char* labels[] = {"Focus", "Short break", "Long break", "Long interval", "Sound", "Reset", "Back"};
+        static const char* labels[] = {"Focus", "Short break", "Long break", "Long interval", "Sound", "Auto start", "Reset", "Back"};
         return labels[i];
+    }
+    static const char* soundLabel(uint8_t sound) {
+        static const char* labels[] = {"Off", "Low", "Medium", "High"};
+        return labels[sound];
     }
 };
