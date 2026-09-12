@@ -123,8 +123,10 @@ public:
                 const Settings defaults;
                 e.save = !(timer.settings() == defaults);
                 if (e.save) timer.configure(defaults);
+                page = Page::Timer; selection = 0;
+            } else {
+                page = Page::Settings; selection = 6;
             }
-            page = Page::Settings; selection = 6;
             break;
         case Page::Edit:
             e.save = !(draft == timer.settings());
