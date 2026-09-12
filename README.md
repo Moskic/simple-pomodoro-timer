@@ -1,6 +1,6 @@
 # StickS3 番茄时钟
 
-基于 **PlatformIO + Arduino + M5Unified + M5PM1** 的离线番茄时钟，英文横屏、大号彩色倒计时。依赖版本固定在 `platformio.ini`。
+基于 **PlatformIO + Arduino + M5Unified** 的离线番茄时钟，英文横屏、大号彩色倒计时。依赖版本固定在 `platformio.ini`。
 
 ## 使用
 
@@ -49,4 +49,4 @@ pio device monitor -b 115200
 
 已刷入 StickS3 并通过固件校验。完整计时循环、提示音、断电保存及电池续航仍需实机验收。
 
-参考：[StickS3 官方文档](https://docs.m5stack.com/en/core/StickS3) · [M5PM1 电源管理](https://docs.m5stack.com/en/arduino/m5sticks3/m5pm1)
+参考：[StickS3 官方文档](https://docs.m5stack.com/en/core/StickS3)

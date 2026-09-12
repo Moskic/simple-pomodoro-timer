@@ -1,6 +1,5 @@
 #pragma once
 #include <M5Unified.h>
-#include <M5PM1.h>
 #include <esp_timer.h>
 
 struct Input { bool confirm, select; };
@@ -16,9 +15,6 @@ public:
         M5.Display.setRotation(1);
         M5.Speaker.end();
         M5.BtnA.setDebounceThresh(30); M5.BtnB.setDebounceThresh(30);
-        // Borrow the existing bus, never reinitialize Wire over M5Unified's driver.
-        const auto err = pm1_.begin(&M5.In_I2C, M5PM1_DEFAULT_ADDR, M5PM1_I2C_FREQ_100K);
-        if (err != M5PM1_OK) { Serial.printf("PM1 init failed: %d\n", err); return false; }
         M5.Power.setExtOutput(false);
         touch(now());
         readBattery(now());
@@ -60,15 +56,12 @@ private:
     void readBattery(uint64_t time) {
         const int level = M5.Power.getBatteryLevel();
         batteryPercent_ = level < 0 ? -1 : (level > 100 ? 100 : level);
-        // StickS3 PM1 GPIO0 is active-low charge status; errors hide the indicator.
-        uint8_t chargeLevel = 1;
-        charging_ = pm1_.gpioGetInput(M5PM1_GPIO_NUM_0, &chargeLevel) == M5PM1_OK && chargeLevel == 0;
+        charging_ = M5.Power.isCharging();
         nextBatteryRead_ = time + 5000;
     }
     int batteryPercent_ = -1;
     bool charging_ = false;
     uint64_t nextBatteryRead_ = 0;
-    M5PM1 pm1_;
     bool dimmed_ = true;
     uint8_t audioStage_ = 0;
     uint64_t lastActivity_ = 0, nextAudio_ = 0;
