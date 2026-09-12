@@ -45,14 +45,15 @@ public:
             char clock[16];
             snprintf(clock, sizeof(clock), "%02u:%02u", unsigned(seconds / 60), unsigned(seconds % 60));
             canvas_.setFont(&fonts::Font7);
-            canvas_.setTextSize(1.5f);
-            // Center the 72px-high digits in the area below the 24px header.
+            canvas_.setTextSize(1.6f);
+            // Center the approximately 77px-high digits below the 24px header.
             text(clock, (240 - canvas_.textWidth(clock)) / 2, 43, timerColor);
             canvas_.setTextSize(1);
             canvas_.setFont(&fonts::Font2);
         } else {
             const char* title = app.page == pomo::Page::Menu ? "ACTIONS" :
-                app.page == pomo::Page::EndConfirm ? "END THIS ROUND?" : "SETTINGS";
+                app.page == pomo::Page::EndConfirm ? "END THIS ROUND?" :
+                app.page == pomo::Page::Settings ? "SETTINGS" : "EDIT SETTING";
             text(title, 10, 4, accent);
             if (app.page == pomo::Page::Menu) {
                 row("Back", 0, app.selection); row("End round", 1, app.selection);
@@ -62,18 +63,31 @@ public:
             } else if (app.page == pomo::Page::Settings) {
                 // Scroll a three-row viewport so text stays legible on the small LCD.
                 const int start = app.selection < 3 ? 0 : 3;
-                for (int i = start; i < start + 3; ++i) row(label(i), i - start, app.selection - start);
+                const char* page = start == 0 ? "1/2" : "2/2";
+                text(page, 230 - canvas_.textWidth(page), 4, 0xBDF7);
+                const auto& settings = app.timer.settings();
+                for (int i = start; i < start + 3; ++i) {
+                    char value[12] = "";
+                    if (i == 0) snprintf(value, sizeof(value), "%um", settings.focus);
+                    else if (i == 1) snprintf(value, sizeof(value), "%um", settings.shortBreak);
+                    else if (i == 2) snprintf(value, sizeof(value), "%um", settings.longBreak);
+                    else if (i == 3) snprintf(value, sizeof(value), "%u", settings.interval);
+                    else if (i == 4) snprintf(value, sizeof(value), "%s", settings.sound ? "On" : "Off");
+                    row(label(i), i - start, app.selection - start, value);
+                }
             } else {
-                text(label(app.field), 10, 32, TFT_WHITE);
+                text(label(app.field), 10, 32, 0xBDF7);
                 char value[24];
                 const auto& d = app.draft;
                 if (app.field == 4) snprintf(value, sizeof(value), "%s", d.sound ? "On" : "Off");
                 else snprintf(value, sizeof(value), "%u %s", app.field == 0 ? d.focus : app.field == 1 ? d.shortBreak :
                     app.field == 2 ? d.longBreak : d.interval, app.field == 3 ? "sessions" : "min");
-                canvas_.setFont(&fonts::Font4); text(value, 10, 61, accent);
+                canvas_.fillRect(10, 59, 4, 34, accent);
+                canvas_.setFont(&fonts::Font4); text(value, 22, 61, accent);
                 canvas_.setFont(&fonts::Font2);
             }
-            text(app.page == pomo::Page::Edit ? "K1 Save     K2 Change" : "K1 Confirm  K2 Select", 10, 115, 0xBDF7);
+            if (app.page == pomo::Page::Edit) footer("K1 Save", "Change K2");
+            else footer("K1 Confirm", "Select K2");
         }
         if (saveError) { canvas_.fillRect(0, 112, 240, 23, TFT_RED); text("Save failed: RAM only", 10, 115, TFT_WHITE); }
         canvas_.pushSprite(0, 0);
@@ -86,13 +100,19 @@ private:
     void text(const char* s, int x, int y, uint16_t color) {
         canvas_.setTextColor(color); canvas_.drawString(s, x, y);
     }
-    void row(const char* s, int position, int selected) {
+    void row(const char* s, int position, int selected, const char* value = nullptr) {
         int y = 29 + position * 25;
         if (position == selected) canvas_.fillRoundRect(6, y, 228, 23, 4, 0x2945);
-        text(s, 14, y + 2, position == selected ? TFT_WHITE : 0xBDF7);
+        const uint16_t color = position == selected ? TFT_WHITE : 0xBDF7;
+        text(s, 14, y + 2, color);
+        if (value && value[0]) text(value, 226 - canvas_.textWidth(value), y + 2, color);
+    }
+    void footer(const char* left, const char* right) {
+        text(left, 10, 115, 0xBDF7);
+        text(right, 230 - canvas_.textWidth(right), 115, 0xBDF7);
     }
     static const char* label(int i) {
-        static const char* labels[] = {"Focus duration", "Short break", "Long break", "Long break interval", "Sound", "Back"};
+        static const char* labels[] = {"Focus", "Short break", "Long break", "Long interval", "Sound", "Back"};
         return labels[i];
     }
 };
