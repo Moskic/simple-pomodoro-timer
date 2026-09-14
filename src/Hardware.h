@@ -61,7 +61,7 @@ private:
     void playSound(uint8_t sound, uint32_t repeat) {
         if (sound == 0) return;
         if (!M5.Speaker.begin()) return;
-        M5.Speaker.setVolume(sound == 1 ? 114 : sound == 2 ? 153 : 190);
+        M5.Speaker.setVolume(sound == 1 ? 128 : sound == 2 ? 181 : 255);
         audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, repeat, -1, true);
         if (!audioPlaying_) M5.Speaker.end();
     }
