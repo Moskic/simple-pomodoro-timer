@@ -37,7 +37,7 @@ public:
         if (sound == 0) return;
         if (!M5.Speaker.begin()) return;
         M5.Speaker.setVolume(sound == 1 ? 114 : sound == 2 ? 153 : 190);
-        audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 1, -1, true);
+        audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 3, -1, true);
         if (!audioPlaying_) M5.Speaker.end();
     }
     void update(uint64_t time) {
