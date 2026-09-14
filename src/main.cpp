@@ -34,6 +34,7 @@ void loop() {
     if (input.confirm || input.select) hardware.touch(now);
     const auto effects = app.step(now, input.confirm, input.select);
     if (effects.completed) hardware.alert(now, app.timer.settings().sound);
+    if (effects.previewSound) hardware.previewSound(now, app.draft.sound);
     if (effects.save && !storage.save(app.timer.settings())) {
         Serial.println("NVS save failed; settings apply in RAM only");
         saveErrorUntil = now + 3000;

@@ -77,7 +77,7 @@ private:
     uint64_t remaining_ = 0, deadline_ = 0;
 };
 enum class Page { Timer, Menu, EndConfirm, Settings, ResetConfirm, Edit };
-struct Effects { bool completed = false, save = false; };
+struct Effects { bool completed = false, save = false, previewSound = false; };
 class Controller {
 public:
     explicit Controller(uint32_t minuteMs = 60000) : timer(minuteMs) {}
@@ -99,7 +99,10 @@ public:
             else if (page == Page::EndConfirm) selection = 1 - selection;
             else if (page == Page::Settings) selection = (selection + 1) % 8;
             else if (page == Page::ResetConfirm) selection = 1 - selection;
-            else increment();
+            else {
+                increment();
+                e.previewSound = field == 4;
+            }
             return e;
         }
         if (!confirm) return e;

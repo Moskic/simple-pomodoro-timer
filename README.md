@@ -88,7 +88,9 @@ the new settings are only active for the current session. After rebooting, the d
 
 ## 🔊 Sound
 
-An embedded alert sound is played when a phase finishes.
+An embedded alert sound is played three times when a phase finishes.
+
+Changing the sound level in Settings plays a single preview; selecting Off stops the preview.
 
 It can be disabled in Settings.
 

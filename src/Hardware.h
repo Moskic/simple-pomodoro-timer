@@ -34,11 +34,19 @@ public:
     }
     void alert(uint64_t time, uint8_t sound) {
         touch(time);
-        if (sound == 0) return;
-        if (!M5.Speaker.begin()) return;
-        M5.Speaker.setVolume(sound == 1 ? 114 : sound == 2 ? 153 : 190);
-        audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, 3, -1, true);
-        if (!audioPlaying_) M5.Speaker.end();
+        playSound(sound, 3);
+    }
+    void previewSound(uint64_t time, uint8_t sound) {
+        touch(time);
+        if (sound == 0) {
+            if (audioPlaying_) {
+                M5.Speaker.stop();
+                M5.Speaker.end();
+                audioPlaying_ = false;
+            }
+            return;
+        }
+        playSound(sound, 1);
     }
     void update(uint64_t time) {
         if (time >= nextBatteryRead_) readBattery(time);
@@ -50,6 +58,13 @@ public:
         }
     }
 private:
+    void playSound(uint8_t sound, uint32_t repeat) {
+        if (sound == 0) return;
+        if (!M5.Speaker.begin()) return;
+        M5.Speaker.setVolume(sound == 1 ? 114 : sound == 2 ? 153 : 190);
+        audioPlaying_ = M5.Speaker.playWav(notificationSound, notificationSoundLength, repeat, -1, true);
+        if (!audioPlaying_) M5.Speaker.end();
+    }
     void readBattery(uint64_t time) {
         const int level = M5.Power.getBatteryLevel();
         batteryPercent_ = level < 0 ? -1 : (level > 100 ? 100 : level);
