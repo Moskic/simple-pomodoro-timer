@@ -1,5 +1,6 @@
 #pragma once
 #include <M5Unified.h>
+#include <esp32-hal-cpu.h>
 #include <esp_timer.h>
 #include "NotificationSound.h"
 
@@ -13,6 +14,7 @@ public:
         cfg.internal_spk = true; // Configure routing; shut down until an alert is needed.
         cfg.fallback_board = m5::board_t::board_M5StickS3;
         M5.begin(cfg);
+        setCpuFrequencyMhz(80);
         M5.Display.setRotation(1);
         M5.Speaker.end();
         M5.BtnA.setDebounceThresh(30); M5.BtnB.setDebounceThresh(30);
